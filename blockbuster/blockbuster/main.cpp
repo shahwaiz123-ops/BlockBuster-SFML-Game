@@ -1,8 +1,32 @@
+
 #include <SFML/Graphics.hpp>
 
 #include <iostream>
 
 using namespace std;
+
+// Haram Yaseen's Part
+
+void drawPlayer(sf::RenderWindow& window)
+
+{
+
+    sf::RectangleShape paddle({ 100.f, 14.f });
+
+    sf::CircleShape ball(6.f);
+
+    paddle.setFillColor(sf::Color::Cyan);
+
+    ball.setFillColor(sf::Color::White);
+
+    paddle.setPosition({ 250.f, 650.f });
+
+    ball.setPosition({ 294.f, 638.f });
+
+    window.draw(paddle);
+
+    window.draw(ball);
+}
 void drawBricks(sf::RenderWindow& window)
 
 {
@@ -43,29 +67,33 @@ void drawBricks(sf::RenderWindow& window)
 
     }
 
+
 }
-
-
-// Haram Yaseen's Part
-
-void drawPlayer(sf::RenderWindow& window)
-
+int main()
 {
+    sf::RenderWindow window(
+        sf::VideoMode({ 600, 700 }), "Block Buster");
 
-    sf::RectangleShape paddle({ 100.f, 14.f });
+    window.setFramerateLimit(60);
 
-    sf::CircleShape ball(6.f);
+    while (window.isOpen())
+    {
+        while (const auto event = window.pollEvent())
+        {
+            if (event->is<sf::Event::Closed>())
+                window.close();
+        }
 
-    paddle.setFillColor(sf::Color::Cyan);
+        if (!window.isOpen())
+            break;
 
-    ball.setFillColor(sf::Color::White);
+        window.clear(sf::Color(25, 25, 45));
 
-    paddle.setPosition({ 250.f, 650.f });
+        drawBricks(window);
+        drawPlayer(window);
 
-    ball.setPosition({ 294.f, 638.f });
+        window.display();
+    }
 
-    window.draw(paddle);
-
-    window.draw(ball);
-
+    return 0;
 }
