@@ -87,15 +87,106 @@ void drawMenu(sf::RenderWindow& window,sf::Font& font, int gameStarted)
         window.draw(text);
     }
 }
+void handleInput(RenderWindow& window,int& screen, int& gameStarted,int& score, int& level)
+{
+    while (const auto event = window.pollEvent())
+    {
+        if (event->is<Event::Closed>())
+        {
+            window.close();
+            return;
+        }
+        // Escape key
+        if (const auto* key =
+            event->getIf<Event::KeyPressed>())
+        {
+            if (key->code == Keyboard::Key::Escape)
+                screen = 0;
+        }
+        // Mouse click
+        if (const auto* click =
+            event->getIf<Event::MouseButtonPressed>())
+        {
+            if (click->button == Mouse::Button::Left
+                && screen == 0)
+            {
+                Vector2f mouse =
+                    window.mapPixelToCoords(click->position);
+                float x = mouse.x;
+                float y = mouse.y;
+                // New Game
+                if (x >= 150 && x <= 450 &&
+                    y >= 280 && y <= 340)
+                {
+                    score = 0;
+                    level = 1;
+                    gameStarted = 1;
+                    screen = 1;
+                }
+                // Continue Game
+                else if (x >= 150 && x <= 450 &&
+                    y >= 365 && y <= 425)
+                {
+                    if (gameStarted == 1)
+                        screen = 1;
+                }
+                // Exit Game
+                else if (x >= 150 && x <= 450 &&
+                    y >= 450 && y <= 510)
+                {
+                    window.close();
+                    return;
+                }
+            }
+        }
+    }
+}
+void updategame() {
+    /*------------------------------------
+             TO DO FUNCTIONS 
+    ------------------------------------*/
+    //TASK 1:-PADDLE MOVEMENTS
+
+
+
+    //TASK 2:-BALL MOVEMENTS
+
+
+
+    //TASK3:-BALL BOUNCING
+
+
+    //TASK 4:-BRICK BREAKING
+
+
+
+    //TASK 5:-SCORE AND LIVES
+}
+void drawGame(RenderWindow& window,Font& font, int screen, int gameStarted)
+{
+    window.clear(Color(25, 25, 45));
+    // Main menu screen
+    if (screen == 0)
+    {
+        drawMenu(window, font, gameStarted);
+    }
+    // Gameplay screen
+    else if (screen == 1)
+    {
+        drawBricks(window);
+        drawPlayer(window);
+    }
+    window.display();
+}
 
 int main()
 {
-    sf::RenderWindow window(
-        sf::VideoMode({ 600, 700 }), "Block Buster"
+    RenderWindow window(
+        VideoMode({ 600, 700 }), "Block Buster"
     );
+
     window.setFramerateLimit(60);
-    // Load font
-    sf::Font font;
+    Font font;
     if (!font.openFromFile("arial.ttf"))
     {
         cout << "Font loading failed!" << endl;
@@ -107,69 +198,16 @@ int main()
     int level = 1;
     while (window.isOpen())
     {
-        while (const auto event = window.pollEvent())
-        {
-            if (event->is<sf::Event::Closed>())
-                window.close();
-            // ESC returns to main menu
-            if (const auto* key =
-                event->getIf<sf::Event::KeyPressed>())
-            {
-                if (key->code == sf::Keyboard::Key::Escape)
-                    screen = 0;
-            }
-            // Mouse click detection
-            if (const auto* click =
-                event->getIf<sf::Event::MouseButtonPressed>())
-            {
-                if (click->button == sf::Mouse::Button::Left
-                    && screen == 0)
-                {
-                    sf::Vector2f mouse =
-                        window.mapPixelToCoords(click->position);
-                    float x = mouse.x;
-                    float y = mouse.y;
-                    // NEW GAME
-                    if (x >= 150 && x <= 450 &&
-                        y >= 280 && y <= 340)
-                    {
-                        score = 0;
-                        level = 1;
-                        gameStarted = 1;
-                        screen = 1;
-                    }
-                    // CONTINUE GAME
-                    else if (x >= 150 && x <= 450 &&
-                        y >= 365 && y <= 425)
-                    {
-                        if (gameStarted == 1)
-                            screen = 1;
-                    }
-                    // EXIT GAME
-                    else if (x >= 150 && x <= 450 &&
-                        y >= 450 && y <= 510)
-                    {
-                        window.close();
-                    }
-                }
-            }
-        }
-
+        // Input
+        handleInput(window, screen,
+            gameStarted, score, level);
         if (!window.isOpen())
             break;
-        window.clear(sf::Color(25, 25, 45));      
-        // Main menu screen
-        if (screen == 0)
-        {
-            drawMenu(window, font, gameStarted);
-        }
-        // Gameplay screen
-        else if (screen == 1)
-        {
-            drawBricks(window);
-            drawPlayer(window);
-        }
-        window.display();
+        // Update
+        updategame();
+        // Draw
+        drawGame(window, font, screen, gameStarted);
     }
+
     return 0;
 }
