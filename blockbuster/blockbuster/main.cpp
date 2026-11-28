@@ -1,4 +1,4 @@
-
+#include<cstdlib>
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include<fstream>
@@ -337,7 +337,7 @@ void handleInput(RenderWindow& window,int& screen, int& gameStarted,int& score, 
         }
     }
 }
-void updategame(int& paddleX,int& ballX,int& ballY,bool launched,int screen)
+void updategame(int& paddleX, int& ballX, int& ballY, bool launched, int screen, int& dx, int& dy)
 {
     
     /*------------------------------------
@@ -364,7 +364,34 @@ void updategame(int& paddleX,int& ballX,int& ballY,bool launched,int screen)
             paddleX = 500;
         }
       //TASK 2:-BALL MOVEMENTS
-
+        if (launched==false)
+        {
+            //ball staying in middle of padle
+            ballX=paddleX+44;
+            ballY=638;
+            // ball will launch when space is pressed
+            if(Keyboard::isKeyPressed(Keyboard::Key::Space))
+            {
+                dy = -5;
+                if(rand()%2==0)
+                {
+                    dx=3;
+                }
+                else
+                {
+                    dx = -3;
+                }
+                launched=true;
+            }
+        }
+        else
+        {
+            // ball movemnet
+            ballX=ballX+dx;
+            ballY=ballY+dy;
+        }
+    }
+}
 
 
       //TASK3:-BALL BOUNCING
@@ -376,8 +403,8 @@ void updategame(int& paddleX,int& ballX,int& ballY,bool launched,int screen)
 
       //TASK 5:-SCORE AND LIVES
     
-    }
-}
+    
+
    
 void drawGame(RenderWindow& window,Font& font, int screen, int gameStarted,const int bricks[8][10],int paddleX,int ballX,int ballY)
 {
@@ -440,7 +467,7 @@ int main()
     int ballY = 638;
 
     int dx = 0;
-    int y = 0;
+    int dy = 0;
     bool launched = false;
     int bricks[8][10] = {};  //array is empty so we need to load the file 
     if (!loadlevel(bricks)) {
@@ -454,7 +481,7 @@ int main()
         if (!window.isOpen())
             break;
         // Update
-        updategame(paddleX,ballX,ballY,launched,screen);
+        updategame(paddleX,ballX,ballY,launched,screen,dx,dy);
         // Draw
         drawGame(window, font, screen, gameStarted,bricks,paddleX,ballX,ballY);
     }
