@@ -152,8 +152,23 @@ void updategame(int& paddleX,int& ballX,int& ballY,bool launched,int screen)
     ------------------------------------*/
     if (screen == 1)
     {
-    //TASK 1:-PADDLE MOVEMENTS
-
+    //TASK 1:-PADDLE MOVEMENT
+        if (Keyboard::isKeyPressed(Keyboard::Key::Left) ||Keyboard::isKeyPressed(Keyboard::Key::A))
+        {
+            paddleX = paddleX - 8;
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Key::Right) ||Keyboard::isKeyPressed(Keyboard::Key::D))
+        {
+            paddleX = paddleX + 8;
+        }
+        if (paddleX < 0)
+        {
+            paddleX = 0;
+        }
+        if (paddleX > 500)
+        {
+            paddleX = 500;
+        }
 
 
    //TASK 2:-BALL MOVEMENTS
@@ -168,8 +183,9 @@ void updategame(int& paddleX,int& ballX,int& ballY,bool launched,int screen)
 
 
    //TASK 5:-SCORE AND LIVES
+    
     }
-    }
+}
    
 void drawGame(RenderWindow& window,Font& font, int screen, int gameStarted,const int bricks[8][10],int paddleX,int ballX,int ballY)
 {
@@ -232,7 +248,7 @@ int main()
     int ballY = 638;
 
     int dx = 0;
-    int dy = 0;
+    int y = 0;
     bool launched = false;
     int bricks[8][10] = {};  //array is empty so we need to load the file 
     if (!loadlevel(bricks)) {
