@@ -5,14 +5,14 @@
 using namespace std;
 using namespace sf;
 
-void drawPlayer(sf::RenderWindow& window)
+void drawPlayer(RenderWindow& window,int paddleX,int ballX,int ballY)
 {
-    sf::RectangleShape paddle({ 100.f, 14.f });
-    sf::CircleShape ball(6.f);
-    paddle.setFillColor(sf::Color::Cyan);
-    ball.setFillColor(sf::Color::White);
-    paddle.setPosition({ 250.f, 650.f });
-    ball.setPosition({ 294.f, 638.f });
+    RectangleShape paddle({ 100.f, 14.f });
+    CircleShape ball(6.f);
+    paddle.setFillColor(Color::Cyan);
+    ball.setFillColor(Color::White);
+    paddle.setPosition({ (float)paddleX,650.f });
+    ball.setPosition({ (float)ballX,(float)ballY});
     window.draw(paddle);
     window.draw(ball);
 }
@@ -27,11 +27,11 @@ void drawBricks(RenderWindow& window,const int bricks[8][10])
             if (bricks[r][c] != 0)
             {
                 if(bricks[r][c]==3)
-                    brick.setFillColor(sf::Color::Red);
+                    brick.setFillColor(Color::Red);
                 else if(bricks[r][c]==2)
-                    brick.setFillColor(sf::Color::Yellow);
+                    brick.setFillColor(Color::Yellow);
                 else if(bricks[r][c]==1)
-                    brick.setFillColor(sf::Color::Green);
+                    brick.setFillColor(Color::Green);
                 brick.setPosition({
                c * 60.f + 1,
                 100.f + r * 25.f + 1
@@ -52,11 +52,11 @@ void centertext(Text& text, float x, float y) {
 
 }
 
-void drawMenu(sf::RenderWindow& window,sf::Font& font, int gameStarted)
+void drawMenu(RenderWindow& window,Font& font, int gameStarted)
 {
-    sf::Text title(font, "BLOCK BUSTER", 55);
-    title.setFillColor(sf::Color::Cyan);
-    title.setStyle(sf::Text::Bold);
+    Text title(font, "BLOCK BUSTER", 55);
+    title.setFillColor(Color::Cyan);
+    title.setStyle(Text::Bold);
     centertext(title, 300.f, 200.f);
     window.draw(title);
     string options[3] = {
@@ -64,9 +64,9 @@ void drawMenu(sf::RenderWindow& window,sf::Font& font, int gameStarted)
         "CONTINUE GAME",
         "EXIT GAME"
     };
-    sf::RectangleShape button({ 300.f, 60.f });
-    sf::Vector2f mouse = window.mapPixelToCoords(
-        sf::Mouse::getPosition(window)
+    RectangleShape button({ 300.f, 60.f });
+    Vector2f mouse = window.mapPixelToCoords(
+ Mouse::getPosition(window)
     );
     for (int i = 0; i < 3; i++)
     {
@@ -74,17 +74,17 @@ void drawMenu(sf::RenderWindow& window,sf::Font& font, int gameStarted)
             150.f, 280.f + i * 85.f
             });
         button.setOutlineThickness(2.f);
-        button.setOutlineColor(sf::Color::Cyan);
+        button.setOutlineColor(Color::Cyan);
         // Hover effect
         if (button.getGlobalBounds().contains(mouse))
-            button.setFillColor(sf::Color(40, 130, 220));
+            button.setFillColor(Color(40, 130, 220));
         else
-            button.setFillColor(sf::Color(25, 55, 110));
+            button.setFillColor(Color(25, 55, 110));
         // Disable Continue before New Game
         if (i == 1 && gameStarted == 0)
-            button.setFillColor(sf::Color(65, 65, 75));
-        sf::Text text(font, options[i], 25);
-        text.setFillColor(sf::Color::White);
+            button.setFillColor(Color(65, 65, 75));
+        Text text(font, options[i], 25);
+        text.setFillColor(Color::White);
         centertext(text, 300.f, 310.f + i * 85.f);
         window.draw(button);
         window.draw(text);
@@ -144,28 +144,34 @@ void handleInput(RenderWindow& window,int& screen, int& gameStarted,int& score, 
         }
     }
 }
-void updategame() {
+void updategame(int& paddleX,int& ballX,int& ballY,bool launched,int screen)
+{
+    
     /*------------------------------------
              TO DO FUNCTIONS 
     ------------------------------------*/
+    if (screen == 1)
+    {
     //TASK 1:-PADDLE MOVEMENTS
 
 
 
-    //TASK 2:-BALL MOVEMENTS
+   //TASK 2:-BALL MOVEMENTS
 
 
 
-    //TASK3:-BALL BOUNCING
+   //TASK3:-BALL BOUNCING
 
 
-    //TASK 4:-BRICK BREAKING
+   //TASK 4:-BRICK BREAKING
 
 
 
-    //TASK 5:-SCORE AND LIVES
-}
-void drawGame(RenderWindow& window,Font& font, int screen, int gameStarted,const int bricks[8][10])
+   //TASK 5:-SCORE AND LIVES
+    }
+    }
+   
+void drawGame(RenderWindow& window,Font& font, int screen, int gameStarted,const int bricks[8][10],int paddleX,int ballX,int ballY)
 {
     window.clear(Color(25, 25, 45));
     // Main menu screen
@@ -177,7 +183,7 @@ void drawGame(RenderWindow& window,Font& font, int screen, int gameStarted,const
     else if (screen == 1)
     {
         drawBricks(window,bricks);
-        drawPlayer(window);
+        drawPlayer(window,paddleX,ballX,ballY);
     }
     window.display();
 }
@@ -221,6 +227,13 @@ int main()
     int gameStarted = 0;
     int score = 0;
     int level = 1;
+    int paddleX = 250;
+    int ballX = 294;
+    int ballY = 638;
+
+    int dx = 0;
+    int dy = 0;
+    bool launched = false;
     int bricks[8][10] = {};  //array is empty so we need to load the file 
     if (!loadlevel(bricks)) {
         return 1;               //if file is not found then program get close imediatly for this function type should be bool not void 
@@ -233,9 +246,9 @@ int main()
         if (!window.isOpen())
             break;
         // Update
-        updategame();
+        updategame(paddleX,ballX,ballY,launched,screen);
         // Draw
-        drawGame(window, font, screen, gameStarted,bricks);
+        drawGame(window, font, screen, gameStarted,bricks,paddleX,ballX,ballY);
     }
 
     return 0;
