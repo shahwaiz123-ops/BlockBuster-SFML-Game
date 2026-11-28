@@ -1,8 +1,9 @@
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include<fstream>
 using namespace std;
-
+using namespace sf;
 
 void drawPlayer(sf::RenderWindow& window)
 {
@@ -15,31 +16,33 @@ void drawPlayer(sf::RenderWindow& window)
     window.draw(paddle);
     window.draw(ball);
 }
-void drawBricks(sf::RenderWindow& window)
+void drawBricks(RenderWindow& window,const int bricks[8][10])
 
 {
-    sf::RectangleShape brick({ 58.f, 23.f });
-    for (int r = 0; r < 8; r++)
+    RectangleShape brick({ 58.f, 23.f });
+    for (int r = 0; r < 8; r++)  //rows
     {
-        for (int c = 0; c < 10; c++)
+        for (int c = 0; c < 10; c++) //cols
         {
-            if (r < 2)
-                brick.setFillColor(sf::Color::Red);
-            else if (r < 5)
-                brick.setFillColor(sf::Color::Yellow);
-            else
-                brick.setFillColor(sf::Color::Green);
-            brick.setPosition({
+            if (bricks[r][c] != 0)
+            {
+                if(bricks[r][c]==3)
+                    brick.setFillColor(sf::Color::Red);
+                else if(bricks[r][c]==2)
+                    brick.setFillColor(sf::Color::Yellow);
+                else if(bricks[r][c]==1)
+                    brick.setFillColor(sf::Color::Green);
+                brick.setPosition({
                c * 60.f + 1,
                 100.f + r * 25.f + 1
-                });
-            window.draw(brick);
-
+                    });
+                window.draw(brick);
+            }
         }
 
     }
 }
-using namespace sf;
+
 void centertext(Text& text, float x, float y) {
     FloatRect bounds = text.getLocalBounds();
     text.setOrigin({
@@ -162,7 +165,7 @@ void updategame() {
 
     //TASK 5:-SCORE AND LIVES
 }
-void drawGame(RenderWindow& window,Font& font, int screen, int gameStarted)
+void drawGame(RenderWindow& window,Font& font, int screen, int gameStarted,const int bricks[8][10])
 {
     window.clear(Color(25, 25, 45));
     // Main menu screen
@@ -173,18 +176,40 @@ void drawGame(RenderWindow& window,Font& font, int screen, int gameStarted)
     // Gameplay screen
     else if (screen == 1)
     {
-        drawBricks(window);
+        drawBricks(window,bricks);
         drawPlayer(window);
     }
     window.display();
 }
+bool loadlevel(int bricks[8][10]) {
+    ifstream fin("level.txt");
+    if (!fin) {
+        cout << "file not found" << endl;
+        return false;
+    }
+    int rows, cols;
+    fin >> rows >> cols;
+    if (!fin || rows != 8 || cols!=10) {   // to check number of rows and cols if they exceed display the message 
+        cout << "level size is out of range" << endl;
+        return false;
+}
+    for (int r = 0;r < 8;r++) {
+        for (int c = 0;c < 10;c++) {
+            fin >> bricks[r][c];
+            if (bricks[r][c] > 3||bricks[r][c]<0||!fin)
+            {
+                cout << "error in brick number" << endl;
+                return false;
+            }
+        }
+    }
+    fin.close();
+    return true;   // successfull load bool function
+}
 
 int main()
 {
-    RenderWindow window(
-        VideoMode({ 600, 700 }), "Block Buster"
-    );
-
+    RenderWindow window(VideoMode({ 600, 700 }), "Block Buster");
     window.setFramerateLimit(60);
     Font font;
     if (!font.openFromFile("arial.ttf"))
@@ -196,6 +221,10 @@ int main()
     int gameStarted = 0;
     int score = 0;
     int level = 1;
+    int bricks[8][10] = {};  //array is empty so we need to load the file 
+    if (!loadlevel(bricks)) {
+        return 1;               //if file is not found then program get close imediatly for this function type should be bool not void 
+    }
     while (window.isOpen())
     {
         // Input
@@ -206,7 +235,7 @@ int main()
         // Update
         updategame();
         // Draw
-        drawGame(window, font, screen, gameStarted);
+        drawGame(window, font, screen, gameStarted,bricks);
     }
 
     return 0;
