@@ -157,10 +157,11 @@ void updategame(int& paddleX,int& ballX,int& ballY,bool launched,int screen)
         {
             paddleX = paddleX - 8;
         }
-        if (Keyboard::isKeyPressed(Keyboard::Key::Right) ||Keyboard::isKeyPressed(Keyboard::Key::D))
+        if (Keyboard::isKeyPressed(Keyboard::Key::Right) || Keyboard::isKeyPressed(Keyboard::Key::D))
         {
             paddleX = paddleX + 8;
         }
+        //to keep paddle within boundry of screen 
         if (paddleX < 0)
         {
             paddleX = 0;
